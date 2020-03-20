@@ -8,7 +8,20 @@
     tools:context=".MainActivity">
 
 
-   <EditText
+
+
+    <ImageView
+        android:id="@+id/home"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/home"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        />
+
+    <EditText
+        android:layout_below="@+id/home"
+        android:layout_marginTop="10dp"
        android:id="@+id/editmob"
        android:layout_width="300dp"
        android:layout_height="wrap_content"
