@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Verify">
+
+    <RelativeLayout
+        android:id="@+id/relative"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:background="@color/colorPrimary"
+        />
+    <TextView
+        android:id="@+id/textv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Wait For Sometimes to Verify Your code....."
+        android:layout_below="@+id/relative"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:textSize="19dp"
+        android:textColor="@color/colorPrimary"
+
+     />
+    <EditText
+        android:id="@+id/editcode"
+        android:layout_width="230dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textv"
+        android:layout_centerHorizontal="true"
+        android:hint=" Verification Code"
+        android:digits="012345678"
+        android:maxLength="6"
+        android:textSize="20dp"
+        tools:ignore="InvalidId,UnknownId" />
+
+    <Button
+        android:id="@+id/signbttn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sign In"
+        android:layout_below="@+id/editcode"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:background="@color/Btncolor"
+        android:textAllCaps="false"
+        />
+      <ProgressBar
+          android:id="@+id/processbar"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_centerHorizontal="true"
+         android:layout_below="@+id/signbttn"
+          android:layout_marginTop="10dp"
+        android:visibility="gone"
+          tools:ignore="UnknownId" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="17dp"
+        android:layout_marginRight="17dp"
+        android:layout_marginBottom="39dp"
+        android:text="Do Not Refresh" />
+</RelativeLayout>
