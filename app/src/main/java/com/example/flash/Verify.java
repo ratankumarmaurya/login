@@ -1,20 +1,27 @@
 package com.example.flash;
 
-import androidx.annotation.MainThread;
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskExecutors;
+import com.google.firebase.FirebaseException;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 
 import java.util.concurrent.TimeUnit;
-
-import javax.security.auth.callback.UnsupportedCallbackException;
 
 public class Verify extends AppCompatActivity {
 
@@ -22,39 +29,118 @@ public class Verify extends AppCompatActivity {
     private String verificationId;
     private ProgressBar progressBar;
     private EditText editText;
+    EditText otp;
+    String no;
+    Button login;
+    private String mVerificationId;
+    private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_verify);
-        mAuth=FirebaseAuth.getInstance();
-        progressBar=findViewById(R.id.processbar);
-        editText=findViewById(R.id.editcode);
 
-        String phonenumber=getIntent().getStringExtra("phonenumber");
-        sendVerificationCode(phonenumber);
-        findViewById(R.id.signbttn).setOnClickListener(new View.OnClickListener() {
+        otp = (EditText) findViewById(R.id.otp);
+
+        mAuth = FirebaseAuth.getInstance();
+
+        no = getIntent().getStringExtra("mobile");
+
+        sendVerificationCode(no);
+
+        login = (Button) findViewById(R.id.login);
+
+        login.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                String code=editText.getText().toString().trim();
+            public void onClick(View v) {
 
-                if (code.isEmpty() || code.length()<6)
-                {
-                    editText.setError("Enter Code ......");
-                    editText.requestFocus();
+                String code = otp.getText().toString().trim();
+                if (code.isEmpty() || code.length() < 6) {
+                    otp.setError("Enter valid code");
+                    otp.requestFocus();
                     return;
                 }
-                verifyCode(code);
+
+                //verifying the code entered manually
+                verifyVerificationCode(code);
+
             }
         });
-
     }
 
-    private void sendVerificationCode(String number) {
+    private void sendVerificationCode(String no) {
+        PhoneAuthProvider.getInstance().verifyPhoneNumber(
+                "+91" + no,
+                60,
+                TimeUnit.SECONDS,
+                TaskExecutors.MAIN_THREAD,
+                mCallbacks);
+    }
 
-        progressBar.setVisibility(View.VISIBLE);
-        PhoneAuthProvider.getInstance().verifyPhoneNumber(number, |60, TimeUnit.SECONDS, TaskExecutors.MAIN_THREAD );
+    private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+        @Override
+        public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
+
+            //Getting the code sent by SMS
+            String code = phoneAuthCredential.getSmsCode();
+
+            //sometime the code is not detected automatically
+            //in this case the code will be null
+            //so user has to manually enter the code
+            if (code != null) {
+                otp.setText(code);
+                //verifying the code
+                verifyVerificationCode(code);
+            }
+        }
+
+        @Override
+        public void onVerificationFailed(FirebaseException e) {
+            Toast.makeText(Verify.this, e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+
+        @Override
+        public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+            super.onCodeSent(s, forceResendingToken);
+
+            //storing the verification id that is sent to the user
+           mVerificationId = s;
+        }
+    };
+
+    private void verifyVerificationCode(String code) {
+        //creating the credential
+
+        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, code);
+
+        //signing the user
+        signInWithPhoneAuthCredential(credential);
+    }
+
+    private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(Verify.this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            //verification successful we will start the profile activity
+                            Intent intent = new Intent(Verify.this, Profile.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+
+                        } else {
+
+                            //verification unsuccessful.. display an error message
+
+                            String message = "Somthing is wrong, we will fix it soon...";
+
+                            if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
+                                message = "Invalid code entered...";
+                            }
 
 
+                        }
+                    }
+                });
     }
 }

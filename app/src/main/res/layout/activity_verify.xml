@@ -26,7 +26,7 @@
 
      />
     <EditText
-        android:id="@+id/editcode"
+        android:id="@+id/otp"
         android:layout_width="230dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/textv"
@@ -38,11 +38,11 @@
         tools:ignore="InvalidId,UnknownId" />
 
     <Button
-        android:id="@+id/signbttn"
+        android:id="@+id/login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Sign In"
-        android:layout_below="@+id/editcode"
+        android:layout_below="@+id/otp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:background="@color/Btncolor"
@@ -53,7 +53,7 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_centerHorizontal="true"
-         android:layout_below="@+id/signbttn"
+         android:layout_below="@+id/login"
           android:layout_marginTop="10dp"
         android:visibility="gone"
           tools:ignore="UnknownId" />
